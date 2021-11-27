@@ -11,14 +11,14 @@ class Player:
         self.name = "Player"
         self.player_result = {}
         self.opponent_result = {}
-        self.weight_board = np.array([[ 20, -3, 11,  8,  8, 11, -3, 20],
-                                      [ -3, -7, -4,  1,  1, -4, -7, -3],
-                                      [ 11, -4,  2,  2,  2,  2, -4, 11],
-                                      [  8,  1,  2, -3, -3,  2,  1,  8],
-                                      [  8,  1,  2, -3, -3,  2,  1,  8],
-                                      [ 11, -4,  2,  2,  2,  2, -4, 11],
-                                      [ -3, -7, -4,  1,  1, -4, -7, -3],
-                                      [ 20, -3, 11,  8,  8, 11, -3, 20]])
+        self.weight_board = np.array([[ 40, -6, 22, 16, 16, 22, -6, 40],
+                                      [ -6,-14, -8,  2,  2, -8,-14, -6],
+                                      [ 22, -8,  4,  4,  4,  4, -8, 22],
+                                      [ 16,  2,  4, -6, -6,  4,  2, 16],
+                                      [ 16,  2,  4, -6, -6,  4,  2, 16],
+                                      [ 22, -8,  4,  4,  4,  4, -8, 22],
+                                      [ -6,-14, -8,  2,  2, -8,-14, -6],
+                                      [ 40, -6, 22, 16, 16, 22, -6, 40]])
             
     def set_board(self, board_inf):
         cur_board = Board(None, None)
@@ -50,7 +50,25 @@ class Player:
         player_point = (cur_board._Board__state == cur_board.player_no).sum()
         opponent_point = (cur_board._Board__state == cur_board.opponent_no).sum()
         
-        return int((player_point - opponent_point) * cur_board.total_step / 10)
+        player_move = cur_board._Board__valid_moves[cur_board.player_no]
+        opponent_move = cur_board._Board__valid_moves[cur_board.opponent_no]
+
+        draw = (player_point == opponent_point) and len(player_move) == 0 and len(opponent_move) == 0
+        if player_point == 0 or draw:
+            return -5000
+        if opponent_point == 0:
+            return 5000
+        
+        player_weight = 0
+        opponent_weight = 0
+        for move in player_move:
+            player_weight += self.weight_board[move[0]][move[1]]
+        for move in opponent_move:
+            opponent_weight += self.weight_board[move[0]][move[1]]
+
+        score = int((player_point - opponent_point) * cur_board.total_step / 10)
+        score += int((player_weight - opponent_weight) * 2) 
+        return score
         
     def alphabeta(self, cur_board, isMax=True, depth_left=3, alpha=-Infinity, beta=Infinity):
         #print(cur_board._Board__state)
@@ -124,5 +142,10 @@ class Player:
         return:
             your moves: 你要下哪裡，它會是一個一維的 list ex:[1,2]
         """
-        dl = int(board_inf[3]/12) + 1
+        if board_inf[3] < 32:
+            dl = 1
+        elif board_inf[3] < 48:
+            dl = 4
+        else:
+            dl = 6
         return self.alphabeta(self.set_board(board_inf), depth_left=dl)[1]
