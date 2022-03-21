@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+	<meta charset="UTF-8">
+	<title>個人資料上傳</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
+</head>
+<style>
+.box {
+	width: 15em;
+	padding: 8px 12px;
+}
+</style>
+<body>
+	<div class="box">
+		<h1>個人資料上傳</h1>
+	</div>
+	<form method="post" action="/" enctype="multipart/form-data">
+		<div class="box">
+			<input type="file" name="files[]" multiple="true" autocomplete="off" required>
+		</div>
+		<div class="box">
+			<input type="submit" value="Submit">
+		</div>
+	</form>
+</body>
+</html>
